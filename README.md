@@ -1,7 +1,7 @@
 # JavaExercises
 Personal Exercises library for java programming languages done during learning Java.
 Welcome to my Personal Exercises Library for Java Programming! This repository contains a collection of Java exercises that I completed during my journey of learning Java. These exercises cover a wide range of Java topics, from basic syntax to more advanced concepts. This library serves as a record of my progress and a valuable resource for revisiting concepts.
-Exercises
+<h6><b>Exercises</b></h6>
 Here is a brief overview of the exercise categories and the topics they cover:
 
 1. Basic Syntax: Covers basic Java syntax, variable declarations, control flow, loops, and simple algorithms.
