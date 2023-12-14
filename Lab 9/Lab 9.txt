@@ -1,0 +1,127 @@
+//File to connect with database for all the questions below
+package com.database;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+public class DBConnection {
+	private static final String driver = "com.mysql.cj.jdbc.Driver";
+	private static final String url = "jdbc:mysql://localhost:3306/testdatabase";
+	private static final String username = "root";
+	private static final String password = "root";
+	
+	static Connection con;
+	public static Connection dbConnect() {
+		try {
+			Class.forName(driver);
+			try {
+				con = DriverManager.getConnection(url, username, password);
+				
+			} catch (Exception e) {
+				System.out.println(e);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return con;
+	}
+	
+}
+//Checking for the Connection is it established or not (optional)
+package com.database;
+
+import java.sql.Connection;
+
+public class CheckConnection {
+
+	public static void check() {
+		try(Connection con = DBConnection.dbConnect()) {
+			System.out.println("Connection Succesfully Established "+ con.toString());
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+
+	}
+
+}
+
+
+//Question 1 WE can insert query like this in our database
+package com.database;
+
+import java.sql.Connection;
+import java.sql.Statement;
+
+public class InsertQuery {
+
+	public static void main(String[] args) {
+		CheckConnection.check();
+		
+		try(Connection con = DBConnection.dbConnect(); Statement stmt = con.createStatement();) {
+			String sqlQuery = "INSERT INTO student(idStudent, StudentName, StudentAge, StudentEmail, StudentMobile, Gender)values"
+					+ "(10001, 'name1', 21, 'name1@gmail.com', '123456789', 'male')";
+			int row = stmt.executeUpdate(sqlQuery);
+			
+			System.out.println(row + " row inserted successfully.");
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+		
+
+	}
+
+}
+
+
+//Question 2 : Updating the exisiting query with its id reference.
+
+package com.database;
+
+import java.sql.Connection;
+import java.sql.Statement;
+
+public class UpdateQuery {
+
+	public static void main(String[] args) {
+		CheckConnection.check();
+		
+		try(Connection con = DBConnection.dbConnect(); Statement stmt = con.createStatement();) {
+			String updateQuery = "UPDATE student SET studentEmail = 'guru@shooliniuniversity.com' WHERE idStudent = 10001";
+			int rowUpdated = stmt.executeUpdate(updateQuery);
+			System.out.println(rowUpdated + " row updated successfully.");
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+		
+
+	}
+
+}
+
+
+//Question 3 : to delete a query based on their id refernce from the database.
+package com.database;
+
+import java.sql.Connection;
+import java.sql.Statement;
+
+public class DeleteQuery {
+
+	public static void main(String[] args) {
+		CheckConnection.check();
+		
+		try(Connection con = DBConnection.dbConnect(); Statement stmt = con.createStatement();) {
+			String deleteQuery = "delete from student WHERE idStudent = 10001";
+			int rowDeleted = stmt.executeUpdate(deleteQuery);
+			System.out.println(rowDeleted + " row deleted successfully.");
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+		
+
+	}
+
+}
