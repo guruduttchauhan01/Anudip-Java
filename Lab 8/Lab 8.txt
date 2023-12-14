@@ -1,0 +1,93 @@
+Question 1:
+
+//Importing all important packages that help to connect with the database
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+
+public class DBConnection {
+	//Driver, url, username and password set up to connect with database
+	private static final String driver = "com.mysql.cj.jdbc.ConnectionImpl@5f049eal";
+	private static final String url = "jdbc:mysql://localhost:3306/testdatabase";
+	private static final String username = "root";
+	private static final String password = "root";
+	
+	static Connection con;
+	public static Connection dbConnect() {
+		try {
+			Class.forName(driver);
+			try {
+				con = DriverManager.getConnection(url, username, password);
+				
+			} catch (Exception e) {
+				System.out.println(e);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return con;
+	}
+	
+}
+
+
+
+
+
+
+Question 2:
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class EmployeeDatabase {
+    public static void main(String[] args) {
+        // Database connection details
+        String jdbcUrl = "jdbc:mysql://localhost:3306/testdatabase";
+        String username = "root";
+        String password = "root";
+
+	// Establish a database connection
+        try(Connection connection = DriverManager.getConnection(jdbcUrl, username, password);Statement statement = connection.createStatement();ResultSet resultSet = 		statement.executeQuery(selectQuery);) {
+            
+            System.out.println("Connection: " + connection);
+
+            
+            
+            String createTableSQL = "CREATE TABLE IF NOT EXISTS Employee ("
+                    + "eid INT AUTO_INCREMENT PRIMARY KEY,"
+                    + "name VARCHAR(35) NOT NULL,"
+                    + "address VARCHAR(85) NOT NULL,"
+                    + "salary INT NOT NULL)";
+            statement.executeUpdate(createTableSQL);
+            System.out.println("Table creation done successfully");
+
+            // Add records to the table
+            String insertRecordSQL1 = "INSERT INTO Employee (name, address, salary) VALUES ('Priya', 'Kolkatta', 30000)";
+            statement.executeUpdate(insertRecordSQL1);
+
+            String insertRecordSQL2 = "INSERT INTO Employee (name, address, salary) VALUES ('Riya', 'Bangalore', 50000)";
+            statement.executeUpdate(insertRecordSQL2);
+
+            // Execute a SELECT query to retrieve data
+            String selectQuery = "SELECT * FROM Employee";
+            
+
+            // Display the retrieved data
+            while (resultSet.next()) {
+                System.out.println("Id: " + resultSet.getInt("eid"));
+                System.out.println("Name: " + resultSet.getString("name"));
+                System.out.println("Address: " + resultSet.getString("address"));
+                System.out.println("Salary: " + resultSet.getInt("salary"));
+                System.out.println("====================================");
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
