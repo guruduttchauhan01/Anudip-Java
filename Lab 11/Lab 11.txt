@@ -1,0 +1,188 @@
+1. In your Hibernate project, you used the get() method to fetch a student object with an ID that doesn't exist in the database. What will be the result, and how would you handle it ?
+
+
+
+So to do this firstly I have created a fetch class differently like this
+public class FetchStudent {
+	public static SessionFactory factory = new Configuration().configure().buildSessionFactory();
+	public static void searchId(int studentId) {
+		Session session = factory.openSession();
+		
+		Student student = (Student) session.get(Student.class, studentId);
+		
+		if(student != null) {
+			System.out.println("\n\n"+"=".repeat(50));
+			System.out.println("\t\t\tStudent Details\n");
+			System.out.println(student);
+			System.out.println("=".repeat(50));
+		} else {
+			System.out.println("_".repeat(50));
+			System.out.println("!!!Incorrect student ID!!!");
+			System.out.println("_".repeat(50));
+		}
+		session.close();
+		factory.close();
+	}
+}
+
+
+
+And to handle null value as we know it will return null if student doesn't exist i have handled it with else statement if student doesn't exist print "Incorrect studetnt ID".
+
+So in my main function where it will get printed i have done like this
+=>In id replace it with id number.
+
+FetchStudent.searchId(id);
+
+
+
+
+====================================================================================================================
+
+
+
+
+2. Develop a basic Create, Read operation using Hibernate for a simple entity, such as Employee. Explain the steps involved and provide a code example for each operation ?
+
+
+
+To do this
+Created a Entity class Employee 
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public class Employee {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String firstName;
+    private String lastName;
+    private String email;
+
+
+//	Getters And setters
+	public String getFirstName() {
+		return firstName;
+	}
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+}
+---------------------------------------------------------------------------------------------------
+Created or update my previous hibernate.cfg.xml like this
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!-- JDBC Database connection settings -->
+        <property name = "connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+		<property name = "connection.url">jdbc:mysql://localhost:3306/hostelmanagementsystem</property>
+		<property name = "connection.username">root</property>
+		<property name = "connection.password">root</property>
+		<property name="dialect">org.hibernate.dialect.MySQL8Dialect</property>
+		<property name="hbm2ddl.auto">create</property>
+		<property name="show_sql">true</property>
+
+     
+        	<mapping class="com.guru.model.Employee"/>
+
+    </session-factory>
+</hibernate-configuration>
+
+-------------------------------------------------------------------------------------------------
+
+---------------------Create Operations -------------------------------------------
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+
+public class EmployeeCreateExample {
+
+    public static void main(String[] args) {
+        // Create a Hibernate configuration and session factory
+        Configuration configuration = new Configuration().configure("hibernate.cfg.xml");
+        SessionFactory sessionFactory = configuration.buildSessionFactory();
+
+        // Open a session
+        try (Session session = sessionFactory.openSession()) {
+            // Begin a transaction
+            Transaction transaction = session.beginTransaction();
+
+            // Create a new Employee
+            Employee employee = new Employee();
+            employee.setFirstName("John");
+            employee.setLastName("Doe");
+            employee.setEmail("john.doe@example.com");
+
+            // Save the Employee to the database
+            Long employeeId = (Long) session.save(employee);
+
+            // Commit the transaction
+            transaction.commit();
+
+            System.out.println("Employee created with ID: " + employeeId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+----------------------Read Operations----------------------------------
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
+public class EmployeeReadExample {
+
+    public static void main(String[] args) {
+        // Create a Hibernate configuration and session factory
+        Configuration configuration = new Configuration().configure("hibernate.cfg.xml");
+        SessionFactory sessionFactory = configuration.buildSessionFactory();
+
+        // Open a session
+        try (Session session = sessionFactory.openSession()) {
+            // Retrieve an Employee by ID
+            Long employeeId = 1L; // Replace with the actual ID
+            Employee employee = session.get(Employee.class, employeeId);
+
+            if (employee != null) {
+                System.out.println("Employee details:");
+                System.out.println("ID: " + employee.getId());
+                System.out.println("First Name: " + employee.getFirstName());
+                System.out.println("Last Name: " + employee.getLastName());
+                System.out.println("Email: " + employee.getEmail());
+            } else {
+                System.out.println("Employee not found with ID: " + employeeId);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
