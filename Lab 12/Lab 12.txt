@@ -1,0 +1,77 @@
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
+@Table(name = "users")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    private String username;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Task> tasks;
+
+    // Constructors, getters, and setters
+    public User(String username, List<Task> tasks) {
+	super();
+	this.username = username;
+	this.tasks = tasks;
+    }
+    
+    public User() {
+	super();
+    }
+    public void setUsername(String username) {
+	this.username = username;
+    }
+    public String getUsername(){
+	return username;
+    }
+    public void setTasks(List<Task> tasks) {
+	this.tasks = tasks;
+    }
+    public List<Task> getTasks() {
+	return tasks;
+    }
+}
+-------------------------------------------------------------------------------------------------
+import javax.persistence.*;
+
+@Entity
+@Table(name = "tasks")
+public class Task {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    // Constructors, getters, and setters
+    public Task(String description, User user){
+	super();
+	this.description = description;
+	this.user = user;
+    }
+    
+    public User() {
+	super();
+    }
+    public void setUsername(String username) {
+	this.username = username;
+    }
+    public String getUsername(){
+	return username;
+    }
+    public void setUser(User user) {
+	this.user = user;
+    }
+    public User getUser() {
+	return user;
+    }
+}
