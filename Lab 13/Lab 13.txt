@@ -1,0 +1,147 @@
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
+
+public class AverageSalaryCalculator {
+
+    public static void main(String[] args) {
+        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+
+        Session session = sessionFactory.openSession();
+
+        Transaction transaction = session.beginTransaction();
+
+        try {
+            // HQL query to calculate average salary
+            Query<Double> query = session.createQuery("SELECT AVG(e.salary) FROM Employee e", Double.class);
+            Double averageSalary = query.uniqueResult();
+
+            System.out.println("Average Salary: " + averageSalary);
+
+            transaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        // Closing the session and session factory
+            session.close();
+            sessionFactory.close();
+        }
+    }
+}
+
+-------------------------------------------------------------------------------------------------------------------
+
+//Vehicle entity class
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "vehicles")
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Vehicle {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "vehicle_id")
+    private Long id;
+
+    @Column(name = "brand")
+    private String brand;
+
+    //Extra: Two constructor one with parameters and one without parameters not adding..... but should add to make
+    //these entities work all fine...
+    public Long getId() {
+	return id;
+    }
+    public String getBrand() {
+	return brand;
+    }
+    public void setBrand() {
+	this.brand = brand;
+    }
+}
+
+
+
+//Car entity class that extends Vehicle
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "cars")
+@PrimaryKeyJoinColumn(name = "vehicle_id")
+public class Car extends Vehicle {
+    @Column(name = "num_doors")
+    private int numberOfDoors;
+
+    // Getter setter and constructors not adding for now as they are common.... but add them if want to work with
+       these entities
+}
+
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "bikes")
+@PrimaryKeyJoinColumn(name = "vehicle_id")
+public class Bike extends Vehicle {
+    @Column(name = "num_wheels")
+    private int numberOfWheels;
+
+    // Other bike-specific attributes and getters/setters...
+}
+
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
+
+import java.util.List;
+
+public class VehicleQuery {
+
+    public static void main(String[] args) {
+        Configuration configuration = new Configuration().configure();
+        SessionFactory sessionFactory = configuration.buildSessionFactory();
+
+        Session session = sessionFactory.openSession();
+
+        session.beginTransaction();
+
+        try {
+            Query<Vehicle> query = session.createQuery("FROM Vehicle", Vehicle.class);
+            List<Vehicle> vehicles = query.list();
+
+
+            for (Vehicle vehicle : vehicles) {
+                System.out.println("Vehicle ID: " + vehicle.getId());
+                System.out.println("Brand: " + vehicle.getBrand());
+
+                if (vehicle instanceof Car) {
+                    Car car = (Car) vehicle;
+                    System.out.println("Number of Doors: " + car.getNumberOfDoors());
+                } else if (vehicle instanceof Bike) {
+                    Bike bike = (Bike) vehicle;
+                    System.out.println("Number of Wheels: " + bike.getNumberOfWheels());
+                }
+
+                System.out.println();
+            }
+
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        session.close();
+        sessionFactory.close();
+    }
+}
+
